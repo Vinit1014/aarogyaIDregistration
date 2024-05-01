@@ -10,19 +10,34 @@ const Register = () => {
   const [select, setSelect] = useState(true);
   const [otp, setOtp] = useState("");
   const [submit, setSubmit] = useState(false);
-  const [contactNumber,setContactNumber] = useState('+91 ');
+  const [mobileNumber, setContactNumber] = useState("+91 ");
 
-  const handleSignUp = async() => {
+  const handleSignUp = async () => {
     setSubmit(!submit);
     try {
       // Send Aadhar number and mobile number to server to send OTP
       await axios.post("http://localhost:5000/api/send-otp", {
-        // aadharNumber: aadhar,
-        mobileNumber: contactNumber
+        aadharNumber: aadhar,
+        mobileNumber: mobileNumber,
       });
       // setSubmit(true);
     } catch (error) {
       console.error("Error sending OTP:", error);
+    }
+  };
+
+  const handleVerifyOTP = async () => {
+    try {
+      // Verify OTP with Aadhar number
+      await axios.post("http://localhost:5000/api/store-otp", {
+        mobileNumber:mobileNumber,
+        aadharNumber: aadhar,
+        otp: otp,
+      });
+      // OTP verification successful, proceed with registration
+      // ...
+    } catch (error) {
+      console.error("Error verifying OTP:", error);
     }
   };
 
@@ -74,8 +89,8 @@ const Register = () => {
             </label>
             <div className="mt-2">
               <input
-                id="aadharnumber"
-                name="aadharnumber"
+                id="aadharNumber"
+                name="aadharNumber"
                 type="text"
                 // autoComplete="email"
                 onChange={(e) => setAadhar(e.target.value)}
@@ -104,21 +119,21 @@ const Register = () => {
             </div>
           </>
         )}
-        
+
         <label className="block text-sm font-medium leading-6 text-gray-900">
-              Mobile number
-            </label>
-            <div className="mt-2">
-              <input
-                id="contactnumber"
-                name="contactnumber"
-                type="text"
-                onChange={(e) => setContactNumber(e.target.value)}
-                value={contactNumber}
-                required
-                className="block w-full rounded-md border-0 py-1.5 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset sm:text-sm sm:leading-6"
-              />
-            </div>
+          Mobile number
+        </label>
+        <div className="mt-2">
+          <input
+            id="mobileNumber"
+            name="mobileNumber"
+            type="text"
+            onChange={(e) => setContactNumber(e.target.value)}
+            value={mobileNumber}
+            required
+            className="block w-full rounded-md border-0 py-1.5 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset sm:text-sm sm:leading-6"
+          />
+        </div>
 
         {submit ? (
           <>
@@ -139,6 +154,16 @@ const Register = () => {
                 className="block w-full mt-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 py-2 px-2"
                 placeholder="Enter OTP"
               />
+
+              <div>
+                <button
+                  type="submit"
+                  className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                  onClick={handleVerifyOTP}
+                >
+                  Verify OTP
+                </button>
+              </div>
             </div>
           </>
         ) : (
