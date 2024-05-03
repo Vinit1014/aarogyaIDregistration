@@ -1,44 +1,94 @@
 import React from "react";
 import { useEffect, useState } from "react";
-import { NavLink, Link } from "react-router-dom";
+import { NavLink, Link, useNavigate } from "react-router-dom";
 import Captcha from "./Captcha";
 import axios from "axios";
 
 const Register = () => {
+  // const history = useHistory();
+  const navigate = useNavigate();
   const [license, setLicense] = useState("");
   const [aadhar, setAadhar] = useState("");
   const [select, setSelect] = useState(true);
   const [otp, setOtp] = useState("");
   const [submit, setSubmit] = useState(false);
   const [mobileNumber, setContactNumber] = useState("+91 ");
+  const [email,setEmail] = useState('');
+  const [success,setSuccess] = useState('');
+  const [token,setToken] = useState('');
+  const [redirectt, setRedirect] = useState(false);
+  
+  useEffect(()=>{
+    console.log(success);
+  },[success])
+  
+  useEffect(()=>{
+    if (token) {
+      setRedirect(true) 
+    }
+  },[token])
+
+  useEffect(() => {
+    // Check if token is present in cookies or local storage
+    const token = getCookie("token"); 
+    console.log(token);
+    if (token) {
+      setRedirect(true);
+    }
+  }, []);
+  
+  function getCookie(name) {
+    const cookieString = document.cookie;
+    const cookies = cookieString.split('; ');
+    for (let cookie of cookies) {
+      const [cookieName, cookieValue] = cookie.split('=');
+      if (cookieName === name) {
+        return decodeURIComponent(cookieValue);
+      }
+    }
+    return null;
+  }
+  
 
   const handleSignUp = async () => {
     setSubmit(!submit);
     try {
       // Send Aadhar number and mobile number to server to send OTP
-      await axios.post("http://localhost:5000/api/send-otp", {
+      const request = await axios.post("http://localhost:5000/api/send-otp", {
         aadharNumber: aadhar,
+        // email: email,
         mobileNumber: mobileNumber,
       });
       // setSubmit(true);
+      setSuccess(request);
+      // console.log(request);
     } catch (error) {
       console.error("Error sending OTP:", error);
     }
   };
-
+  
   const handleVerifyOTP = async () => {
     try {
       // Verify OTP with Aadhar number
-      await axios.post("http://localhost:5000/api/store-otp", {
+      const response = await axios.post("http://localhost:5000/api/store-otp", {
         mobileNumber:mobileNumber,
+        // email:email,
         aadharNumber: aadhar,
         otp: otp,
       });
-      // OTP verification successful, proceed with registration
-      // ...
+      setToken(response);
+      setCookie("token", response.data.token, 1);
+
     } catch (error) {
       console.error("Error verifying OTP:", error);
     }
+  };
+
+  const setCookie = (name, value, days) => {
+    const date = new Date();
+    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+    const expires = "expires=" + date.toUTCString();
+    document.cookie = name + "=" + value + ";" + expires + ";path=/";
   };
 
   useEffect(() => {
@@ -47,6 +97,10 @@ const Register = () => {
   const selectFun = () => {
     setSelect(!select);
   };
+
+  if (redirectt) {
+    navigate('/login');
+  }
 
   return (
     <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
@@ -123,6 +177,9 @@ const Register = () => {
         <label className="block text-sm font-medium leading-6 text-gray-900">
           Mobile number
         </label>
+        {/* <label className="block text-sm font-medium leading-6 text-gray-900">
+          Email address
+        </label> */}
         <div className="mt-2">
           <input
             id="mobileNumber"
@@ -133,8 +190,17 @@ const Register = () => {
             required
             className="block w-full rounded-md border-0 py-1.5 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset sm:text-sm sm:leading-6"
           />
+          {/* <input
+            id="email"
+            name="email"
+            type="text"
+            onChange={(e) => setEmail(e.target.value)}
+            value={email}
+            required
+            className="block w-full rounded-md border-0 py-1.5 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset sm:text-sm sm:leading-6"
+          /> */}
         </div>
-
+        
         {submit ? (
           <>
             <div className="mt-6 my-4">

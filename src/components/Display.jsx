@@ -1,11 +1,12 @@
 import React from "react";
 import { useEffect, useState } from "react";
-import { NavLink, Link } from "react-router-dom";
+import { NavLink, Link, useNavigate } from "react-router-dom";
 import Captcha from "./Captcha";
 
 const Display = () => {
   // const [email, setEmail] = useState("");
   // const [password, setPassword] = useState("");
+  const navigate = useNavigate();
   const [license, setLicense] = useState("");
   const [aadhar, setAadhar] = useState("");
   const [select, setSelect] = useState(true);
@@ -14,17 +15,43 @@ const Display = () => {
   const [number,setNumber] = useState('');
   const [emaill,setEmaill] = useState('');
   const [datee,setDatee] = useState();
+  
+  const [redirectt, setRedirect] = useState(false);
+
+  function getCookie(name) {
+    const cookieString = document.cookie;
+    const cookies = cookieString.split('; ');
+    for (let cookie of cookies) {
+      const [cookieName, cookieValue] = cookie.split('=');
+      if (cookieName === name) {
+        return decodeURIComponent(cookieValue);
+      }
+    }
+    return null;
+  }
 
   const handleSignUp = () => {
     setSubmit(!submit);
   };
 
   useEffect(() => {
+    const token = getCookie("token"); 
+    console.log(token);
+    if (!token) {
+      setRedirect(true);
+    }
+  }, []);
+  
+  useEffect(() => {
     console.log(select);
   }, [select]);
   const selectFun = () => {
     setSelect(!select);
   };
+
+  if (redirectt) {
+    navigate('/login');
+  }
 
   return (
     <div className="flex border-2 border-red-300 min-h-full flex-col justify-center m-2 px-6 py-12 lg:px-8">

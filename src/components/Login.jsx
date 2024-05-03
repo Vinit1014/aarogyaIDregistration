@@ -1,18 +1,83 @@
 import React from "react";
 import { useEffect, useState } from "react";
-import { NavLink, Link } from "react-router-dom";
-import Captcha from "./Captcha";
+import { NavLink, Link, useNavigate } from "react-router-dom";
+import axios from "axios";
+
+// import Captcha from "./Captcha";
 
 const Login = () => {
   // const [email, setEmail] = useState('')
-  const [number, setNumber] = useState("");
+  const navigate = useNavigate();
+  const [mobileNumber, setMobileNumber] = useState("+91 ");
   const [userName, setUserName] = useState("");
   const [select, setSelect] = useState(true);
-  const handleSignIn = () => {};
+  const [submit, setSubmit] = useState(false);
+  const [success, setSuccess] = useState();
+  const [otp, setOtp] = useState("");
+
+  const [check,setCheck] = useState(''); //for verify OTP 
+
+  useEffect(() => {
+    console.log(success);
+  }, [success]);
+
+  useEffect(()=>{
+    console.log(check);
+  })
+
+  function getCookie(name) {
+    const cookieString = document.cookie;
+    const cookies = cookieString.split("; ");
+    for (let cookie of cookies) {
+      const [cookieName, cookieValue] = cookie.split("=");
+      if (cookieName === name) {
+        return decodeURIComponent(cookieValue);
+      }
+    }
+    return null;
+  }
+
+  const handleVerifyOTP = async () => {
+    try {
+      const response = await axios.get("http://localhost:5000/api/protected", {
+        headers: {
+          Authorization: `Bearer ${getCookie("token")}`, // Assuming you store the token in localStorage
+        },
+      });
+      // Update state with fetched user data
+      setCheck(response);
+      if (response) {
+        navigate('/app')
+      }
+    } catch (error) {
+      // Handle errors
+      console.log(error);
+      // setError(error.response.data.error);
+    }
+  };
+
+  const handleSignIn = async () => {
+    setSubmit(!submit);
+    try {
+      // Send Aadhar number and mobile number to server to send OTP
+      const request = await axios.post(
+        "http://localhost:5000/apilogin/send-otp",
+        {
+          mobileNumber: mobileNumber,
+        }
+      );
+      // setSubmit(true);
+      setSuccess(request);
+      // console.log(request);
+    } catch (error) {
+      console.error("Error sending OTP:", error);
+    }
+  };
 
   useEffect(() => {
     console.log(select);
   }, [select]);
+
   const selectFun = () => {
     setSelect(!select);
     // console.log(select);
@@ -28,12 +93,24 @@ const Login = () => {
       <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-xl">
         <div>
           <div className="flex mb-4">
-            <div className={select ?"border-red-200 border-2 px-4 py-2 mr-6":"border-red-500 border-2 px-4 py-2 mr-6" } >
+            <div
+              className={
+                select
+                  ? "border-red-200 border-2 px-4 py-2 mr-6"
+                  : "border-red-500 border-2 px-4 py-2 mr-6"
+              }
+            >
               <button onClick={selectFun}>
                 Healthcare Professional ID/Username
               </button>
             </div>
-            <div className={select ? "border-red-500 border-2 px-14 py-2": "border-red-200 border-2 px-14 py-2"}>
+            <div
+              className={
+                select
+                  ? "border-red-500 border-2 px-14 py-2"
+                  : "border-red-200 border-2 px-14 py-2"
+              }
+            >
               <button onClick={selectFun}>Mobile number</button>
             </div>
           </div>
@@ -49,8 +126,8 @@ const Login = () => {
                   name="number"
                   type="tel"
                   // autoComplete="email"
-                  onChange={(e) => setNumber(e.target.value)}
-                  value={number}
+                  onChange={(e) => setMobileNumber(e.target.value)}
+                  value={mobileNumber}
                   required
                   className="block w-full rounded-md border-0 py-1.5 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset sm:text-sm sm:leading-6"
                 />
@@ -77,7 +154,38 @@ const Login = () => {
           )}
         </div>
 
-        <Captcha />
+        {submit && (
+          <>
+            <div className="mt-6 my-4">
+              <label
+                htmlFor="otp"
+                className="block text-sm font-medium leading-6 text-gray-900"
+              >
+                Enter OTP (6 digits)
+              </label>
+              <input
+                id="otp"
+                name="otp"
+                type="text"
+                maxLength={6} // Limit input to 6 characters
+                value={otp}
+                onChange={(e) => setOtp(e.target.value)}
+                className="block w-full mt-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 py-2 px-2"
+                placeholder="Enter OTP"
+              />
+
+              <div>
+                <button
+                  type="submit"
+                  className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                  onClick={handleVerifyOTP}
+                >
+                  Verify OTP
+                </button>
+              </div>
+            </div>
+          </>
+        )}
 
         <div>
           <button
