@@ -10,7 +10,7 @@ const app = express();
 app.use(bodyParser.json());
 app.use(cors(
   {
-    origin: [],
+    origin: ['https://aarogya-i-dregistration-frontend.vercel.app'],
     methods: ["POST","GET"],
     credentials: true
   }
