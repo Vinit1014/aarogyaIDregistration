@@ -5,14 +5,13 @@ import Captcha from "./Captcha";
 import axios from "axios";
 
 const Register = () => {
-  // const history = useHistory();
   const navigate = useNavigate();
   const [license, setLicense] = useState("");
   const [aadhar, setAadhar] = useState("");
   const [select, setSelect] = useState(true);
   const [otp, setOtp] = useState("");
   const [submit, setSubmit] = useState(false);
-  const [mobileNumber, setContactNumber] = useState("+91 ");
+  // const [mobileNumber, setContactNumber] = useState("+91 ");
   const [email,setEmail] = useState('');
   const [success,setSuccess] = useState('');
   const [token,setToken] = useState('');
@@ -56,8 +55,8 @@ const Register = () => {
       // Send Aadhar number and mobile number to server to send OTP
       const request = await axios.post("http://localhost:5000/api/send-otp", {
         aadharNumber: aadhar,
-        // email: email,
-        mobileNumber: mobileNumber,
+        email: email,
+        // mobileNumber: mobileNumber,
       });
       // setSubmit(true);
       setSuccess(request);
@@ -71,8 +70,8 @@ const Register = () => {
     try {
       // Verify OTP with Aadhar number
       const response = await axios.post("http://localhost:5000/api/store-otp", {
-        mobileNumber:mobileNumber,
-        // email:email,
+        // mobileNumber:mobileNumber,
+        email:email,
         aadharNumber: aadhar,
         otp: otp,
       });
@@ -174,14 +173,14 @@ const Register = () => {
           </>
         )}
 
-        <label className="block text-sm font-medium leading-6 text-gray-900">
-          Mobile number
-        </label>
         {/* <label className="block text-sm font-medium leading-6 text-gray-900">
-          Email address
+          Mobile number
         </label> */}
+        <label className="block text-sm font-medium leading-6 text-gray-900">
+          Email address
+        </label>
         <div className="mt-2">
-          <input
+          {/* <input
             id="mobileNumber"
             name="mobileNumber"
             type="text"
@@ -189,8 +188,8 @@ const Register = () => {
             value={mobileNumber}
             required
             className="block w-full rounded-md border-0 py-1.5 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset sm:text-sm sm:leading-6"
-          />
-          {/* <input
+          /> */}
+          <input
             id="email"
             name="email"
             type="text"
@@ -198,7 +197,7 @@ const Register = () => {
             value={email}
             required
             className="block w-full rounded-md border-0 py-1.5 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset sm:text-sm sm:leading-6"
-          /> */}
+          />
         </div>
         
         {submit ? (
@@ -239,7 +238,7 @@ const Register = () => {
         <div>
           <button
             type="submit"
-            className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+            className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2  focus-visible:outline-indigo-600"
             onClick={handleSignUp}
           >
             Submit

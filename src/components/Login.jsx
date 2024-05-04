@@ -6,7 +6,7 @@ import axios from "axios";
 // import Captcha from "./Captcha";
 
 const Login = () => {
-  // const [email, setEmail] = useState('')
+  const [email, setEmail] = useState('')
   const navigate = useNavigate();
   const [mobileNumber, setMobileNumber] = useState("+91 ");
   const [userName, setUserName] = useState("");
@@ -63,7 +63,8 @@ const Login = () => {
       const request = await axios.post(
         "http://localhost:5000/apilogin/send-otp",
         {
-          mobileNumber: mobileNumber,
+          // mobileNumber: mobileNumber,
+          email: email,
         }
       );
       // setSubmit(true);
@@ -89,7 +90,7 @@ const Login = () => {
           Login to National Healthcare Providers Registry
         </h2>
       </div>
-
+      
       <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-xl">
         <div>
           <div className="flex mb-4">
@@ -111,16 +112,16 @@ const Login = () => {
                   : "border-red-200 border-2 px-14 py-2"
               }
             >
-              <button onClick={selectFun}>Mobile number</button>
+              <button onClick={selectFun}>Email Address</button>
             </div>
           </div>
 
           {select ? (
             <>
-              <label className="block text-sm font-medium leading-6 text-gray-900">
+              {/* <label className="block text-sm font-medium leading-6 text-gray-900">
                 Mobile number
               </label>
-              <div className="mt-2">
+              <div className="mt-2 mb-2 border-2 border-gray-400 rounded-md">
                 <input
                   id="mobilenumber"
                   name="number"
@@ -131,6 +132,21 @@ const Login = () => {
                   required
                   className="block w-full rounded-md border-0 py-1.5 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset sm:text-sm sm:leading-6"
                 />
+              </div> */}
+              <label className="block text-sm font-medium leading-6 text-gray-900">
+                Email address
+              </label>
+              <div className="mt-2 mb-2 border-2 border-gray-400 rounded-md">
+                <input
+                  id="emailaddress"
+                  name="email"
+                  type="email"
+                  // autoComplete="email"
+                  onChange={(e) => setEmail(e.target.value)}
+                  value={email}
+                  required
+                  className="block w-full rounded-md border-0 py-1.5 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset sm:text-sm sm:leading-6"
+                />
               </div>
             </>
           ) : (
@@ -138,12 +154,11 @@ const Login = () => {
               <label className="block text-sm font-medium leading-6 text-gray-900">
                 Healthcare Professional ID/Username
               </label>
-              <div className="mt-2">
+              <div className="mt-2 mb-2 border-2 border-gray-400 rounded-md">
                 <input
                   id="username"
                   name="username"
                   type="text"
-                  // autoComplete="email"
                   onChange={(e) => setUserName(e.target.value)}
                   value={userName}
                   required

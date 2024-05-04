@@ -113,7 +113,7 @@ app.post("/api/store-otp", async (req, res) => {
         }
         
         const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
-        
+          
         // Update the user record with the Aadhar number
         user.aadharNumber = aadharNumber;
         await user.save();
