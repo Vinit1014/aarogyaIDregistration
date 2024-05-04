@@ -15,7 +15,6 @@ app.use(cors(
     credentials: true
   }
 ));
-const PORT = process.env.PORT || 5000;
 
 mongoose
   .connect(process.env.MONGODB_URI, {
@@ -168,4 +167,4 @@ app.get('/api/protected', verifyToken, async (req, res) => {
   }
 });
 
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+// app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
