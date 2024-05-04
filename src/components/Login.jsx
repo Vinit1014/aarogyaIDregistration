@@ -6,6 +6,7 @@ import axios from "axios";
 // import Captcha from "./Captcha";
 
 const Login = () => {
+  axios.defaults.withCredentials = true;
   const [email, setEmail] = useState('')
   const navigate = useNavigate();
   const [mobileNumber, setMobileNumber] = useState("+91 ");
@@ -41,7 +42,7 @@ const Login = () => {
 
   const handleVerifyOTP = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/api/protected", {
+      const response = await axios.get("https://aarogya-i-dregistration-api.vercel.app/api/protected", {
         headers: {
           Authorization: `Bearer ${getCookie("token")}`, // Assuming you store the token in localStorage
         },
@@ -68,7 +69,7 @@ const Login = () => {
     try {
       // Send Aadhar number and mobile number to server to send OTP
       const request = await axios.post(
-        "http://localhost:5000/apilogin/send-otp",
+        "https://aarogya-i-dregistration-api.vercel.app/apilogin/send-otp",
         {
           // mobileNumber: mobileNumber,
           email: email,
