@@ -14,6 +14,8 @@ const Login = () => {
   const [submit, setSubmit] = useState(false);
   const [success, setSuccess] = useState();
   const [otp, setOtp] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
 
   const [check,setCheck] = useState(''); //for verify OTP 
 
@@ -57,6 +59,11 @@ const Login = () => {
   };
 
   const handleSignIn = async () => {
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailPattern.test(email)) {
+      setErrorMessage("Invalid email address.");
+      return;
+    }
     setSubmit(!submit);
     try {
       // Send Aadhar number and mobile number to server to send OTP
@@ -68,10 +75,12 @@ const Login = () => {
         }
       );
       // setSubmit(true);
+      setSuccessMessage("OTP successfully sent to registered emailID")
       setSuccess(request);
       // console.log(request);
     } catch (error) {
       console.error("Error sending OTP:", error);
+      setErrorMessage("Error sending OTP. Please try again later.");
     }
   };
 
@@ -90,7 +99,7 @@ const Login = () => {
           Login to National Healthcare Providers Registry
         </h2>
       </div>
-      
+
       <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-xl">
         <div>
           <div className="flex mb-4">
@@ -221,6 +230,12 @@ const Login = () => {
           </NavLink>
         </p>
       </div>
+      {errorMessage && (
+        <div className="text-red-500 text-sm text-center">{errorMessage}</div>
+      )}
+      {successMessage && (
+        <div className="text-green-500 text-md text-center">{successMessage}</div>
+      )}
     </div>
   );
 };

@@ -1,28 +1,13 @@
 import React, { useState } from "react";
 
 const Captcha = () => {
-  const [num1, setNum1] = useState(Math.floor(Math.random() * 10));
-  const [num2, setNum2] = useState(Math.floor(Math.random() * 10));
-  const [userAnswer, setUserAnswer] = useState("");
-  const [captchaResult, setCaptchaResult] = useState("");
-  const [isValid, setIsValid] = useState(false);
-    
-  const generateCaptcha = () => {
-    setNum1(Math.floor(Math.random() * 10));
-    setNum2(Math.floor(Math.random() * 10));
-    setUserAnswer("");
-    setCaptchaResult("");
-  };
-
+  
+  const [captcha, setCaptcha] = useState("");
+  const [captchaInput, setCaptchaInput] = useState("");
+  
   const handleSubmit = (e) => {
     e.preventDefault();
-    const result = num1 + num2;
-    if (parseInt(userAnswer) === result) {
-      setIsValid(true);
-    } else {
-      setIsValid(false);
-      generateCaptcha();
-    }
+
   };
 
   return (

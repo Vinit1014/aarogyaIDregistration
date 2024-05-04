@@ -24,6 +24,15 @@ const Navbar = () => {
         </li>
         <li>
           <NavLink
+            to="/register"
+            className={({ isActive }) => (isActive ? "active" : undefined)}
+            end
+          >
+            Register
+          </NavLink>
+        </li>
+        <li>
+          <NavLink
             to="/login"
             className={({ isActive }) => (isActive ? "active" : undefined)}
             end
@@ -31,6 +40,7 @@ const Navbar = () => {
             Login
           </NavLink>
         </li>
+        
         <li>
           <NavLink
             to="/"

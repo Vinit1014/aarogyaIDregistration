@@ -12,44 +12,92 @@ const Register = () => {
   const [otp, setOtp] = useState("");
   const [submit, setSubmit] = useState(false);
   // const [mobileNumber, setContactNumber] = useState("+91 ");
-  const [email,setEmail] = useState('');
-  const [success,setSuccess] = useState('');
-  const [token,setToken] = useState('');
+  const [email, setEmail] = useState("");
+  const [success, setSuccess] = useState("");
+  const [token, setToken] = useState("");
   const [redirectt, setRedirect] = useState(false);
-  
-  useEffect(()=>{
-    console.log(success);
-  },[success])
-  
-  useEffect(()=>{
-    if (token) {
-      setRedirect(true) 
-    }
-  },[token])
+  const [errorMessage, setErrorMessage] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
+  const [captcha, setCaptcha] = useState("");
+  const [captchaInput, setCaptchaInput] = useState("");
 
   useEffect(() => {
     // Check if token is present in cookies or local storage
-    const token = getCookie("token"); 
+    generateCaptcha();
+    const token = getCookie("token");
     console.log(token);
     if (token) {
       setRedirect(true);
     }
   }, []);
+
+  const generateCaptcha = () => {
+    const characters =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    let captcha = "";
+    for (let i = 0; i < 6; i++) {
+      captcha += characters.charAt(
+        Math.floor(Math.random() * characters.length)
+      );
+    }
+    setCaptcha(captcha);
+  };
   
+  useEffect(() => {
+    console.log(errorMessage);
+  }, [errorMessage]);
+
+  useEffect(() => {
+    console.log(success);
+  }, [success]);
+
+  useEffect(() => {
+    if (token) {
+      setRedirect(true);
+    }
+  }, [token]);
+
   function getCookie(name) {
     const cookieString = document.cookie;
-    const cookies = cookieString.split('; ');
+    const cookies = cookieString.split("; ");
     for (let cookie of cookies) {
-      const [cookieName, cookieValue] = cookie.split('=');
+      const [cookieName, cookieValue] = cookie.split("=");
       if (cookieName === name) {
         return decodeURIComponent(cookieValue);
       }
     }
     return null;
   }
-  
 
   const handleSignUp = async () => {
+    if (aadhar.length !== 12 && !email) {
+      setErrorMessage(
+        "Aadhar number must be 12 digits and email address is required."
+      );
+      return;
+    }
+
+    if (aadhar.length !== 12) {
+      setErrorMessage("Aadhar number must be 12 digits.");
+      return;
+    }
+
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailPattern.test(email)) {
+      setErrorMessage("Invalid email address.");
+      return;
+    }
+
+    if (captchaInput !== captcha) {
+      setErrorMessage(
+        "Invalid captcha. Please enter the characters correctly."
+      );
+      return;
+    }
+
+    // Clear previous error messages
+    setErrorMessage("");
+
     setSubmit(!submit);
     try {
       // Send Aadhar number and mobile number to server to send OTP
@@ -59,25 +107,26 @@ const Register = () => {
         // mobileNumber: mobileNumber,
       });
       // setSubmit(true);
+      setSuccessMessage("OTP sent successfully to regsitered emailID")
       setSuccess(request);
       // console.log(request);
     } catch (error) {
       console.error("Error sending OTP:", error);
+      setErrorMessage("Error sending OTP. Please try again later.");
     }
   };
-  
+
   const handleVerifyOTP = async () => {
     try {
       // Verify OTP with Aadhar number
       const response = await axios.post("http://localhost:5000/api/store-otp", {
         // mobileNumber:mobileNumber,
-        email:email,
+        email: email,
         aadharNumber: aadhar,
         otp: otp,
       });
       setToken(response);
       setCookie("token", response.data.token, 1);
-
     } catch (error) {
       console.error("Error verifying OTP:", error);
     }
@@ -85,7 +134,7 @@ const Register = () => {
 
   const setCookie = (name, value, days) => {
     const date = new Date();
-    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+    date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
     const expires = "expires=" + date.toUTCString();
     document.cookie = name + "=" + value + ";" + expires + ";path=/";
   };
@@ -98,7 +147,7 @@ const Register = () => {
   };
 
   if (redirectt) {
-    navigate('/login');
+    navigate("/login");
   }
 
   return (
@@ -173,22 +222,10 @@ const Register = () => {
           </>
         )}
 
-        {/* <label className="block text-sm font-medium leading-6 text-gray-900">
-          Mobile number
-        </label> */}
         <label className="block text-sm font-medium leading-6 text-gray-900">
           Email address
         </label>
         <div className="mt-2">
-          {/* <input
-            id="mobileNumber"
-            name="mobileNumber"
-            type="text"
-            onChange={(e) => setContactNumber(e.target.value)}
-            value={mobileNumber}
-            required
-            className="block w-full rounded-md border-0 py-1.5 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset sm:text-sm sm:leading-6"
-          /> */}
           <input
             id="email"
             name="email"
@@ -199,7 +236,7 @@ const Register = () => {
             className="block w-full rounded-md border-0 py-1.5 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset sm:text-sm sm:leading-6"
           />
         </div>
-        
+
         {submit ? (
           <>
             <div className="mt-6 my-4">
@@ -232,7 +269,32 @@ const Register = () => {
             </div>
           </>
         ) : (
-          <Captcha />
+          <div className="mt-6 my-4">
+            <label
+              htmlFor="captcha"
+              className="block text-sm font-medium leading-6 text-gray-900"
+            >
+              Captcha
+            </label>
+            <input
+              id="captcha"
+              name="captcha"
+              type="text"
+              value={captchaInput}
+              onChange={(e) => setCaptchaInput(e.target.value)}
+              className="block w-full mt-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 py-2 px-2"
+              placeholder="Enter Captcha"
+            />
+            <div className="mt-1">
+              <span className="text-gray-500 text-sm">{captcha}</span>
+              <button
+                className="ml-2 text-blue-500 text-sm font-semibold underline focus:outline-none"
+                onClick={generateCaptcha}
+              >
+                Refresh
+              </button>
+            </div>
+          </div>
         )}
 
         <div>
@@ -254,6 +316,12 @@ const Register = () => {
           </NavLink>
         </p>
       </div>
+      {errorMessage && (
+        <div className="text-red-500 text-sm text-center">{errorMessage}</div>
+      )}
+      {successMessage && (
+        <div className="text-green-500 text-md text-center">{successMessage}</div>
+      )}
     </div>
   );
 };
