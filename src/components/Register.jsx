@@ -92,23 +92,24 @@ const Register = () => {
       return;
     }
 
-    // Clear previous error messages
-
     setSubmit(!submit);
     try {
       // Send Aadhar number and mobile number to server to send OTP
+      const loadingToastId = toast.loading('Sending OTP...');
+
       const request = await axios.post("https://aarogyaidregistration-api.onrender.com/api/send-otp", {
         aadharNumber: aadhar,
         email: email,
         // mobileNumber: mobileNumber,
       });
+      toast.dismiss(loadingToastId);
+
       // setSubmit(true);
       toast.success('OTP sent successfully to regsitered emailID')
       setSuccess(request);
       // console.log(request);
     } catch (error) {
       console.error("Error sending OTP:", error);
-      setErrorMessage("Error sending OTP. Please try again later.");
     }
   };
 

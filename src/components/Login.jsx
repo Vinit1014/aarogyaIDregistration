@@ -72,6 +72,7 @@ const Login = () => {
     }
     setSubmit(!submit);
     try {
+      const loadingToastId = toast.loading('Sending OTP...');
       // Send Aadhar number to server to send OTP
       const request = await axios.post(
         "https://aarogyaidregistration-api.onrender.com/apilogin/send-otp",
@@ -81,7 +82,9 @@ const Login = () => {
         }
       );
       // setSubmit(true);
-      toast.success('OTP successfully sent to registered emailID')
+      toast.dismiss(loadingToastId);
+      // setSubmit(true);
+      toast.success('OTP sent successfully to regsitered emailID')
       setSuccess(request);
       // console.log(request);
     } catch (error) {
