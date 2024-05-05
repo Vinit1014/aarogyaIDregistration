@@ -47,8 +47,7 @@ const Login = () => {
         "https://aarogyaidregistration-api.onrender.com/api/protected",
         {
           headers: {
-            Authorization: `Bearer ${getCookie("token")}`, // Assuming you store the token in localStorage
-            otp:otp
+            Authorization: `Bearer ${getCookie("token")}`,
           },
         }
       );
