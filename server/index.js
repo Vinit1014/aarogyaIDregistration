@@ -176,7 +176,7 @@ app.get("/api/protected", verifyToken, async (req, res) => {
       return res.send({ message: "User not found" });
     }
     // Send response
-    return res.send({ message: "User logged in Congrats!" },token);
+    return res.send({ message: "User logged in Congrats!" });
     // res.status(200).json({ user });
   } catch (error) {
     console.error("Error fetching protected data:", error);
