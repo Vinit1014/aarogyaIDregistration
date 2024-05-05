@@ -102,7 +102,7 @@ const Register = () => {
     setSubmit(!submit);
     try {
       // Send Aadhar number and mobile number to server to send OTP
-      const request = await axios.post("https://aarogya-i-dregistration-api.vercel.app/api/send-otp", {
+      const request = await axios.post("https://aarogyaidregistration-api.onrender.com/api/send-otp", {
         aadharNumber: aadhar,
         email: email,
         // mobileNumber: mobileNumber,
@@ -120,7 +120,7 @@ const Register = () => {
   const handleVerifyOTP = async () => {
     try {
       // Verify OTP with Aadhar number
-      const response = await axios.post("https://aarogya-i-dregistration-api.vercel.app/api/store-otp", {
+      const response = await axios.post("https://aarogyaidregistration-api.onrender.com/api/store-otp", {
         // mobileNumber:mobileNumber,
         email: email,
         aadharNumber: aadhar,

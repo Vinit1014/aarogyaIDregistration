@@ -7,7 +7,7 @@ import axios from "axios";
 
 const Login = () => {
   axios.defaults.withCredentials = true;
-  const [email, setEmail] = useState('')
+  const [email, setEmail] = useState("");
   const navigate = useNavigate();
   const [mobileNumber, setMobileNumber] = useState("+91 ");
   const [userName, setUserName] = useState("");
@@ -18,15 +18,15 @@ const Login = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
 
-  const [check,setCheck] = useState(''); //for verify OTP 
+  const [check, setCheck] = useState(""); //for verify OTP
 
   useEffect(() => {
     console.log(success);
   }, [success]);
 
-  useEffect(()=>{
+  useEffect(() => {
     console.log(check);
-  })
+  });
 
   function getCookie(name) {
     const cookieString = document.cookie;
@@ -42,15 +42,18 @@ const Login = () => {
 
   const handleVerifyOTP = async () => {
     try {
-      const response = await axios.get("https://aarogya-i-dregistration-api.vercel.app/api/protected", {
-        headers: {
-          Authorization: `Bearer ${getCookie("token")}`, // Assuming you store the token in localStorage
-        },
-      });
+      const response = await axios.get(
+        "https://aarogyaidregistration-api.onrender.com/api/protected",
+        {
+          headers: {
+            Authorization: `Bearer ${getCookie("token")}`, // Assuming you store the token in localStorage
+          },
+        }
+      );
       // Update state with fetched user data
       setCheck(response);
       if (response) {
-        navigate('/app')
+        navigate("/app");
       }
     } catch (error) {
       // Handle errors
@@ -69,14 +72,14 @@ const Login = () => {
     try {
       // Send Aadhar number to server to send OTP
       const request = await axios.post(
-        "https://aarogya-i-dregistration-api.vercel.app/apilogin/send-otp",
+        "https://aarogyaidregistration-api.onrender.com/send-otp",
         {
           // mobileNumber: mobileNumber,
           email: email,
         }
       );
       // setSubmit(true);
-      setSuccessMessage("OTP successfully sent to registered emailID")
+      setSuccessMessage("OTP successfully sent to registered emailID");
       setSuccess(request);
       // console.log(request);
     } catch (error) {
@@ -235,7 +238,9 @@ const Login = () => {
         <div className="text-red-500 text-sm text-center">{errorMessage}</div>
       )}
       {successMessage && (
-        <div className="text-green-500 text-md text-center">{successMessage}</div>
+        <div className="text-green-500 text-md text-center">
+          {successMessage}
+        </div>
       )}
     </div>
   );
