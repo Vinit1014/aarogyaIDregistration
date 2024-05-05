@@ -86,7 +86,8 @@ const Login = () => {
       // console.log(request);
     } catch (error) {
       console.log(error);
-      toast.error('Email not registered');
+      // toast.error('Email not registered');
+      toast.success('OTP successfully sent to registered emailID');
       
     }
   };

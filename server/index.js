@@ -126,18 +126,20 @@ app.post("/apilogin/send-otp", async (req, res) => {
     };
 
     auth.sendMail(receiver, (error, emailResponse) => {
-      if (error) throw error;
-      // console.log("success!");
-      response.end();
+      if (error) {
+        console.error("Error sending OTP:", error);
+        res.status(500).json({ error: "Failed to send OTP" });
+      } else {
+        console.log("OTP sent successfully");
+        res.send({ message: "OTP sent successfully" });
+      }
     });
-    res.send({ message: "OTP sent successfully" });
-
-    // console.log("OTPPP "+send);
   } catch (error) {
     console.error("Error sending OTP:", error);
     res.status(500).json({ error: "Failed to send OTP" });
   }
 });
+
 
 app.post("/api/store-otp", async (req, res) => {
   const { aadharNumber, otp, email } = req.body;
