@@ -90,10 +90,12 @@ app.post("/api/send-otp", async (req, res) => {
       console.log("success!");
       response.end();
     });
-
+    res.send({ message: "OTP sent successfully" });
+    
     // res.status(200).json({ message: "OTP sent successfully" });
   } catch (error) {
     console.error("Error sending OTP:", error);
+    res.send({ message: "Error sending OTP" });
     // res.status(500).json({ error: "Failed to send OTP" });
   }
 });
@@ -107,6 +109,12 @@ app.post("/apilogin/send-otp", async (req, res) => {
   }
   try {
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
+
+    await User.findOneAndUpdate(
+      { email: email },
+      { $set: { otp: otp } },
+      { upsert: true }
+    );
 
     //send otp
     const receiver = {
@@ -122,7 +130,7 @@ app.post("/apilogin/send-otp", async (req, res) => {
       res.send({ message: "OTP sent successfully" });
       response.end();
     });
-
+    
     // console.log("OTPPP "+send);
   } catch (error) {
     console.error("Error sending OTP:", error);
@@ -148,7 +156,7 @@ app.post("/api/store-otp", async (req, res) => {
     // Update the user record with the Aadhar number
     user.aadharNumber = aadharNumber;
     await user.save();
-
+    
     res.send({ message: "OTP verified successfully", token });
   } catch (error) {
     console.error("Error adding Aadhar number:", error);
@@ -160,13 +168,17 @@ app.get("/api/protected", verifyToken, async (req, res) => {
   try {
     // Access userId from req object
     const userId = req.userId;
+    const otp = req.otp;
     // Retrieve user data from database using userId
-    const user = await User.findById(userId);
+    const user = await User.findOne({userId,otp});
     if (!user) {
       return res.send({ message: "User not found" });
     }
+    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "1h",
+    });
     // Send response
-    return res.send({ message: "User logged in Congrats!" });
+    return res.send({ message: "User logged in Congrats!" },token);
     // res.status(200).json({ user });
   } catch (error) {
     console.error("Error fetching protected data:", error);

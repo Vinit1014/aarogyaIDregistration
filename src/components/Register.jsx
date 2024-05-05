@@ -1,8 +1,8 @@
 import React from "react";
 import { useEffect, useState } from "react";
 import { NavLink, Link, useNavigate } from "react-router-dom";
-import Captcha from "./Captcha";
 import axios from "axios";
+import { Toaster, toast } from 'sonner';
 
 const Register = () => {
   axios.defaults.withCredentials = true;
@@ -72,32 +72,27 @@ const Register = () => {
 
   const handleSignUp = async () => {
     if (aadhar.length !== 12 && !email) {
-      setErrorMessage(
-        "Aadhar number must be 12 digits and email address is required."
-      );
+      toast.error('Aadhar number must be 12 digits and email address is required')
       return;
     }
 
     if (aadhar.length !== 12) {
-      setErrorMessage("Aadhar number must be 12 digits.");
+      toast.error('Aadhar number must be 12 digits')
       return;
     }
 
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailPattern.test(email)) {
-      setErrorMessage("Invalid email address.");
+      toast.error('Invalid email address')
       return;
     }
-
+    
     if (captchaInput !== captcha) {
-      setErrorMessage(
-        "Invalid captcha. Please enter the characters correctly."
-      );
+      toast.error('Invalid captcha. Please enter the characters correctly')
       return;
     }
 
     // Clear previous error messages
-    setErrorMessage("");
 
     setSubmit(!submit);
     try {
@@ -108,7 +103,7 @@ const Register = () => {
         // mobileNumber: mobileNumber,
       });
       // setSubmit(true);
-      setSuccessMessage("OTP sent successfully to regsitered emailID")
+      toast.success('OTP sent successfully to regsitered emailID')
       setSuccess(request);
       // console.log(request);
     } catch (error) {
@@ -129,6 +124,7 @@ const Register = () => {
       setToken(response);
       setCookie("token", response.data.token, 1);
     } catch (error) {
+      toast.error('Error verifying OTP')
       console.error("Error verifying OTP:", error);
     }
   };
@@ -153,6 +149,8 @@ const Register = () => {
 
   return (
     <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
+      <Toaster richColors/>
+      
       <div className="sm:mx-auto sm:w-full sm:max-w-xl">
         <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
           Create your Healthcare Professional ID
@@ -317,12 +315,6 @@ const Register = () => {
           </NavLink>
         </p>
       </div>
-      {errorMessage && (
-        <div className="text-red-500 text-sm text-center">{errorMessage}</div>
-      )}
-      {successMessage && (
-        <div className="text-green-500 text-md text-center">{successMessage}</div>
-      )}
     </div>
   );
 };

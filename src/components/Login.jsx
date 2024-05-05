@@ -2,8 +2,7 @@ import React from "react";
 import { useEffect, useState } from "react";
 import { NavLink, Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-
-// import Captcha from "./Captcha";
+import { Toaster, toast } from 'sonner';
 
 const Login = () => {
   axios.defaults.withCredentials = true;
@@ -13,7 +12,6 @@ const Login = () => {
   const [userName, setUserName] = useState("");
   const [select, setSelect] = useState(true);
   const [submit, setSubmit] = useState(false);
-  const [success, setSuccess] = useState();
   const [otp, setOtp] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
@@ -21,13 +19,16 @@ const Login = () => {
   const [check, setCheck] = useState(""); //for verify OTP
 
   useEffect(() => {
-    console.log(success);
-  }, [success]);
-
-  useEffect(() => {
     console.log(check);
   });
 
+  const setCookie = (name, value, days) => {
+    const date = new Date();
+    date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
+    const expires = "expires=" + date.toUTCString();
+    document.cookie = name + "=" + value + ";" + expires + ";path=/";
+  };
+  
   function getCookie(name) {
     const cookieString = document.cookie;
     const cookies = cookieString.split("; ");
@@ -47,10 +48,12 @@ const Login = () => {
         {
           headers: {
             Authorization: `Bearer ${getCookie("token")}`, // Assuming you store the token in localStorage
+            otp:otp
           },
         }
       );
       // Update state with fetched user data
+      setCookie("token", response.data.token, 1);
       setCheck(response);
       if (response) {
         navigate("/app");
@@ -65,7 +68,7 @@ const Login = () => {
   const handleSignIn = async () => {
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailPattern.test(email)) {
-      setErrorMessage("Invalid email address.");
+      toast.error('Invalid email address')
       return;
     }
     setSubmit(!submit);
@@ -79,12 +82,13 @@ const Login = () => {
         }
       );
       // setSubmit(true);
-      setSuccessMessage("OTP successfully sent to registered emailID");
+      toast.success('OTP successfully sent to registered emailID')
       setSuccess(request);
       // console.log(request);
     } catch (error) {
-      console.error("Error sending OTP:", error);
-      setErrorMessage("Error sending OTP. Please try again later.");
+      console.log(error);
+      toast.success('Email not registered');
+      
     }
   };
 
@@ -98,6 +102,7 @@ const Login = () => {
   };
   return (
     <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
+      <Toaster richColors/>
       <div className="">
         <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
           Login to National Healthcare Providers Registry
@@ -149,7 +154,7 @@ const Login = () => {
               <label className="block text-sm font-medium leading-6 text-gray-900">
                 Email address
               </label>
-              <div className="mt-2 mb-2 border-2 border-gray-400 rounded-md">
+              <div className="mt-2 mb-2 border-2  rounded-md">
                 <input
                   id="emailaddress"
                   name="email"
@@ -234,14 +239,6 @@ const Login = () => {
           </NavLink>
         </p>
       </div>
-      {errorMessage && (
-        <div className="text-red-500 text-sm text-center">{errorMessage}</div>
-      )}
-      {successMessage && (
-        <div className="text-green-500 text-md text-center">
-          {successMessage}
-        </div>
-      )}
     </div>
   );
 };

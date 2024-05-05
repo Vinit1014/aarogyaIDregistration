@@ -1,7 +1,7 @@
 import React from "react";
 import { useEffect, useState } from "react";
 import { NavLink, Link, useNavigate } from "react-router-dom";
-import Captcha from "./Captcha";
+import { Toaster, toast } from 'sonner'
 
 const Display = () => {
   // const [email, setEmail] = useState("");
@@ -31,7 +31,9 @@ const Display = () => {
   }
 
   const handleSignUp = () => {
-    setSubmit(!submit);
+    // setSubmit(!submit);
+    // toast("Just for printing")
+    toast.info('This is just a display after login page.')
   };
 
   useEffect(() => {
@@ -60,20 +62,32 @@ const Display = () => {
   }
 
   const handleLogOut = async () => {
+    toast.success("Successfully logged out")
     deleteTokenFromCookies();
   };
 
   return (
     <div className="flex border-2 border-red-300 min-h-full flex-col justify-center m-2 px-6 py-12 lg:px-8">
-      <div className="border-2 border-red-400 p-2 mb-16">
-        Display content for printing information.
-        <button
-          type="submit"
-          className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2  focus-visible:outline-indigo-600"
-          onClick={handleLogOut}
-        >
-          Logout
-        </button>
+      <Toaster />
+      <div className="border-2 border-red-400 text-center font-medium p-2 mb-16">
+        Display content for printing information fetching Aadhar card API.
+        <div className="items-center mt-2 mx-96">
+          <button
+            type="submit"
+            className="flex w-30 justify-center mx-56 rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2  focus-visible:outline-indigo-600"
+            onClick={handleLogOut}
+          >
+            Logout
+          </button>
+
+          <div>
+            <Toaster richColors/>
+            
+            <button onClick={() => toast('My first toast')}>
+              Give me a toast
+            </button>
+          </div>
+        </div>
       </div>
 
       <div className="sm:mx-auto border-2 border-red-300 sm:w-full sm:max-w-xl">
@@ -172,31 +186,6 @@ const Display = () => {
             </div>
           </div>
         </div>
-
-        {submit ? (
-          <>
-            <div className="mt-6 my-4">
-              <label
-                htmlFor="otp"
-                className="block text-sm font-medium leading-6 text-gray-900"
-              >
-                Enter OTP (6 digits)
-              </label>
-              <input
-                id="otp"
-                name="otp"
-                type="text"
-                maxLength={6} // Limit input to 6 characters
-                value={otp}
-                onChange={(e) => setOtp(e.target.value)}
-                className="block w-full mt-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 py-2 px-2"
-                placeholder="Enter OTP"
-              />
-            </div>
-          </>
-        ) : (
-          <Captcha />
-        )}
 
         <div>
           <button
