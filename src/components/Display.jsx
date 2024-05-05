@@ -12,17 +12,17 @@ const Display = () => {
   const [select, setSelect] = useState(true);
   const [otp, setOtp] = useState("");
   const [submit, setSubmit] = useState(false);
-  const [number,setNumber] = useState('');
-  const [emaill,setEmaill] = useState('');
-  const [datee,setDatee] = useState();
-  
+  const [number, setNumber] = useState("");
+  const [emaill, setEmaill] = useState("");
+  const [datee, setDatee] = useState();
+
   const [redirectt, setRedirect] = useState(false);
 
   function getCookie(name) {
     const cookieString = document.cookie;
-    const cookies = cookieString.split('; ');
+    const cookies = cookieString.split("; ");
     for (let cookie of cookies) {
-      const [cookieName, cookieValue] = cookie.split('=');
+      const [cookieName, cookieValue] = cookie.split("=");
       if (cookieName === name) {
         return decodeURIComponent(cookieValue);
       }
@@ -35,13 +35,13 @@ const Display = () => {
   };
 
   useEffect(() => {
-    const token = getCookie("token"); 
+    const token = getCookie("token");
     console.log(token);
     if (!token) {
       setRedirect(true);
     }
   }, []);
-  
+
   useEffect(() => {
     console.log(select);
   }, [select]);
@@ -50,24 +50,30 @@ const Display = () => {
   };
 
   if (redirectt) {
-    navigate('/login');
+    navigate("/login");
   }
 
-  const handleLogOut =async()=>{
-    
+  function deleteTokenFromCookies() {
+    // Set the token cookie's expiration date to the past
+    document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    setRedirect(true);
   }
+
+  const handleLogOut = async () => {
+    deleteTokenFromCookies();
+  };
 
   return (
     <div className="flex border-2 border-red-300 min-h-full flex-col justify-center m-2 px-6 py-12 lg:px-8">
       <div className="border-2 border-red-400 p-2 mb-16">
         Display content for printing information.
-          <button
-            type="submit"
-            className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2  focus-visible:outline-indigo-600"
-            onClick={handleLogOut}
-          >
-            Logout
-          </button>
+        <button
+          type="submit"
+          className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2  focus-visible:outline-indigo-600"
+          onClick={handleLogOut}
+        >
+          Logout
+        </button>
       </div>
 
       <div className="sm:mx-auto border-2 border-red-300 sm:w-full sm:max-w-xl">
@@ -165,7 +171,6 @@ const Display = () => {
               />
             </div>
           </div>
-        
         </div>
 
         {submit ? (

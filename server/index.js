@@ -4,17 +4,19 @@ const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const nodemailer = require("nodemailer");
-const jwt = require('jsonwebtoken');
+const jwt = require("jsonwebtoken");
 
 const app = express();
 app.use(bodyParser.json());
-app.use(cors(
-  {
-    origin: ['https://aarogya-i-dregistration-frontend.vercel.app'],
-    methods: ["POST","GET"],
-    credentials: true
-  }
-));
+app.use(
+  cors({
+    origin: ["https://aarogya-i-dregistration-frontend.vercel.app"],
+    methods: ["POST", "GET"],
+    credentials: true,
+  })
+);
+
+const PORT = process.env.PORT || 8080;
 
 mongoose
   .connect(process.env.MONGODB_URI, {
@@ -34,17 +36,17 @@ const UserSchema = new mongoose.Schema({
 const User = mongoose.model("User", UserSchema);
 
 const verifyToken = (req, res, next) => {
-  const token = req.header('Authorization');
+  const token = req.header("Authorization");
 
-  if (!token) return res.status(401).json({ message: 'Unauthorized' });
+  if (!token) return res.status(401).json({ message: "Unauthorized" });
 
   try {
-    const decoded = jwt.verify(token.split(' ')[1], process.env.JWT_SECRET);
+    const decoded = jwt.verify(token.split(" ")[1], process.env.JWT_SECRET);
     req.userId = decoded.userId;
     next();
   } catch (error) {
-    console.error('Error verifying token:', error);
-    res.status(403).json({ message: 'Invalid token' });
+    console.error("Error verifying token:", error);
+    res.status(403).json({ message: "Invalid token" });
   }
 };
 
@@ -58,9 +60,9 @@ const auth = nodemailer.createTransport({
   },
 });
 
-app.get("/",(req,res)=>{
+app.get("/", (req, res) => {
   res.send("Hello world Live");
-})
+});
 
 app.post("/api/send-otp", async (req, res) => {
   const { aadharNumber, email } = req.body;
@@ -90,7 +92,6 @@ app.post("/api/send-otp", async (req, res) => {
     });
 
     // res.status(200).json({ message: "OTP sent successfully" });
-    
   } catch (error) {
     console.error("Error sending OTP:", error);
     // res.status(500).json({ error: "Failed to send OTP" });
@@ -99,14 +100,14 @@ app.post("/api/send-otp", async (req, res) => {
 
 app.post("/apilogin/send-otp", async (req, res) => {
   const { email } = req.body;
-  const user = await User.findOne({ email});
+  const user = await User.findOne({ email });
   if (!user) {
-    res.send({ message: "User not registered"});
+    res.send({ message: "User not registered" });
     return;
   }
   try {
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    
+
     //send otp
     const receiver = {
       from: process.env.APP_EMAIL,
@@ -121,7 +122,7 @@ app.post("/apilogin/send-otp", async (req, res) => {
       res.send({ message: "OTP sent successfully" });
       response.end();
     });
-    
+
     // console.log("OTPPP "+send);
   } catch (error) {
     console.error("Error sending OTP:", error);
@@ -140,35 +141,37 @@ app.post("/api/store-otp", async (req, res) => {
       return res.status(400).json({ error: "Invalid OTP" });
     }
 
-    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "1h",
+    });
 
     // Update the user record with the Aadhar number
     user.aadharNumber = aadharNumber;
     await user.save();
 
-    res.send({ message: "OTP verified successfully",token });
+    res.send({ message: "OTP verified successfully", token });
   } catch (error) {
     console.error("Error adding Aadhar number:", error);
     res.status(500).json({ error: "Failed to add Aadhar number" });
   }
 });
 
-app.get('/api/protected', verifyToken, async (req, res) => {
+app.get("/api/protected", verifyToken, async (req, res) => {
   try {
     // Access userId from req object
     const userId = req.userId;
     // Retrieve user data from database using userId
     const user = await User.findById(userId);
     if (!user) {
-      return res.send({message:"User not found"})
+      return res.send({ message: "User not found" });
     }
     // Send response
-    return res.send({message:"User logged in Congrats!"})
+    return res.send({ message: "User logged in Congrats!" });
     // res.status(200).json({ user });
   } catch (error) {
-    console.error('Error fetching protected data:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    console.error("Error fetching protected data:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
-// app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
