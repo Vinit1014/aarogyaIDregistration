@@ -127,9 +127,9 @@ app.post("/apilogin/send-otp", async (req, res) => {
     auth.sendMail(receiver, (error, emailResponse) => {
       if (error) throw error;
       // console.log("success!");
-      res.send({ message: "OTP sent successfully" });
       response.end();
     });
+    res.send({ message: "OTP sent successfully" });
 
     // console.log("OTPPP "+send);
   } catch (error) {
