@@ -169,14 +169,12 @@ app.get("/api/protected", verifyToken, async (req, res) => {
   try {
     // Access userId from req object
     const userId = req.userId;
-    // const otp = req.otp;
-    // Retrieve user data from database using userId
     const user = await User.findById(userId);
     if (!user) {
       return res.send({ message: "User not found" });
     }
     // Send response
-    return res.send({ message: "User logged in Congrats!" });
+    return res.send({ message: "User logged in Congrats!"});
     // res.status(200).json({ user });
   } catch (error) {
     console.error("Error fetching protected data:", error);

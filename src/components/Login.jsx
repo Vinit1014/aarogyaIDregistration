@@ -52,7 +52,7 @@ const Login = () => {
         }
       );
       // Update state with fetched user data
-      setCookie("token", response.data.token, 1);
+      // setCookie("token", response.data.token, 1);
       setCheck(response);
       if (response) {
         navigate("/app");
