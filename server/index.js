@@ -171,7 +171,7 @@ app.get("/api/protected", verifyToken, async (req, res) => {
     const userId = req.userId;
     // const otp = req.otp;
     // Retrieve user data from database using userId
-    const user = await User.findById({userId});
+    const user = await User.findById(userId);
     if (!user) {
       return res.send({ message: "User not found" });
     }
