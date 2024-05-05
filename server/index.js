@@ -46,6 +46,7 @@ const verifyToken = (req, res, next) => {
     next();
   } catch (error) {
     console.error("Error verifying token:", error);
+
     res.status(403).json({ message: "Invalid token" });
   }
 };
@@ -168,9 +169,9 @@ app.get("/api/protected", verifyToken, async (req, res) => {
   try {
     // Access userId from req object
     const userId = req.userId;
-    const otp = req.otp;
+    // const otp = req.otp;
     // Retrieve user data from database using userId
-    const user = await User.findOne({userId,otp});
+    const user = await User.findById({userId});
     if (!user) {
       return res.send({ message: "User not found" });
     }
