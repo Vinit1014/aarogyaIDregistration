@@ -67,7 +67,7 @@ const Login = () => {
     }
     setSubmit(!submit);
     try {
-      // Send Aadhar number and mobile number to server to send OTP
+      // Send Aadhar number to server to send OTP
       const request = await axios.post(
         "https://aarogya-i-dregistration-api.vercel.app/apilogin/send-otp",
         {
