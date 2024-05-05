@@ -58,6 +58,10 @@ const auth = nodemailer.createTransport({
   },
 });
 
+app.get("/",(req,res)=>{
+  res.send("Hello world Live");
+})
+
 app.post("/api/send-otp", async (req, res) => {
   const { aadharNumber, email } = req.body;
   console.log(email);
