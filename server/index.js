@@ -130,7 +130,7 @@ app.post("/apilogin/send-otp", async (req, res) => {
       res.send({ message: "OTP sent successfully" });
       response.end();
     });
-    
+
     // console.log("OTPPP "+send);
   } catch (error) {
     console.error("Error sending OTP:", error);
@@ -174,9 +174,6 @@ app.get("/api/protected", verifyToken, async (req, res) => {
     if (!user) {
       return res.send({ message: "User not found" });
     }
-    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "1h",
-    });
     // Send response
     return res.send({ message: "User logged in Congrats!" },token);
     // res.status(200).json({ user });
