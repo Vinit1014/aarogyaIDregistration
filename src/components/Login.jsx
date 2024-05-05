@@ -75,7 +75,7 @@ const Login = () => {
     try {
       // Send Aadhar number to server to send OTP
       const request = await axios.post(
-        "https://aarogyaidregistration-api.onrender.com/api/send-otp",
+        "https://aarogyaidregistration-api.onrender.com/apilogin/send-otp",
         {
           // mobileNumber: mobileNumber,
           email: email,
