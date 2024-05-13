@@ -92,7 +92,7 @@ const Register = () => {
       return;
     }
 
-    setSubmit(!submit);
+    
     try {
       // Send Aadhar number and mobile number to server to send OTP
       const loadingToastId = toast.loading('Sending OTP...');
@@ -103,12 +103,13 @@ const Register = () => {
         // mobileNumber: mobileNumber,
       });
       toast.dismiss(loadingToastId);
-
+      setSubmit(!submit);
       // setSubmit(true);
       toast.success('OTP sent successfully to regsitered emailID')
       setSuccess(request);
       // console.log(request);
     } catch (error) {
+      toast.error("Email not registered")
       console.error("Error sending OTP:", error);
     }
   };
@@ -122,20 +123,29 @@ const Register = () => {
         aadharNumber: aadhar,
         otp: otp,
       });
+
       setToken(response);
-      setCookie("token", response.data.token, 1);
+
+      if (response.data?.message === "truee") {
+        console.log("Success looking ahead");
+        setRedirect(true)
+        toast.success("OTP verification done");
+      } else {
+        toast.error("Invalid OTP");
+      }
+
     } catch (error) {
       toast.error('Error verifying OTP')
       console.error("Error verifying OTP:", error);
     }
   };
 
-  const setCookie = (name, value, days) => {
-    const date = new Date();
-    date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
-    const expires = "expires=" + date.toUTCString();
-    document.cookie = name + "=" + value + ";" + expires + ";path=/";
-  };
+  // const setCookie = (name, value, days) => {
+  //   const date = new Date();
+  //   date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
+  //   const expires = "expires=" + date.toUTCString();
+  //   document.cookie = name + "=" + value + ";" + expires + ";path=/";
+  // };
 
   useEffect(() => {
     console.log(select);

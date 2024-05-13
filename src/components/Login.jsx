@@ -13,20 +13,35 @@ const Login = () => {
   const [select, setSelect] = useState(true);
   const [submit, setSubmit] = useState(false);
   const [otp, setOtp] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
-  const [successMessage, setSuccessMessage] = useState("");
+  const [success, setSuccess] = useState("");
+  // const [token, setToken] = useState("");
+  const [redirectt, setRedirect] = useState(false);
 
   const [check, setCheck] = useState(""); //for verify OTP
 
   useEffect(() => {
-    console.log(check);
-  });
+    console.log("MEssageeeee" + check.data?.message);
+  },[check]);
+
+  useEffect(() => {
+    const token = getCookie("token");
+    console.log(token);
+    if (token) {
+      setRedirect(true);
+    }
+  }, []);
+  useEffect(() => {
+    console.log("Checking " + success.data?.message);
+  }, [success]);
 
   const setCookie = (name, value, days) => {
-    const date = new Date();
-    date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
-    const expires = "expires=" + date.toUTCString();
-    document.cookie = name + "=" + value + ";" + expires + ";path=/";
+    const token = getCookie("token");
+    if (token == null) {
+      const date = new Date();
+      date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
+      const expires = "expires=" + date.toUTCString();
+      document.cookie = name + "=" + value + ";" + expires + ";path=/";
+    }
   };
   
   function getCookie(name) {
@@ -43,20 +58,26 @@ const Login = () => {
 
   const handleVerifyOTP = async () => {
     try {
-      const response = await axios.get(
+      const response = await axios.post(
         "https://aarogyaidregistration-api.onrender.com/api/protected",
+        { otp: otp },
         {
           headers: {
             Authorization: `Bearer ${getCookie("token")}`,
           },
         }
       );
-      // Update state with fetched user data
-      // setCookie("token", response.data.token, 1);
-      setCheck(response);
-      if (response) {
-        navigate("/app");
+      
+      if (response.data?.message === "truee") {
+        console.log("Success looking ahead");
+        setRedirect(true);
+        toast.success("OTP verification done");
+      } else {
+        toast.error("Invalid OTP");
       }
+
+      setCheck(response);
+      
     } catch (error) {
       // Handle errors
       console.log(error);
@@ -70,28 +91,30 @@ const Login = () => {
       toast.error('Invalid email address')
       return;
     }
-    setSubmit(!submit);
+    
     try {
       const loadingToastId = toast.loading('Sending OTP...');
       // Send Aadhar number to server to send OTP
-      const request = await axios.post(
+      const response = await axios.post(
         "https://aarogyaidregistration-api.onrender.com/apilogin/send-otp",
-        {
-          // mobileNumber: mobileNumber,
+        { 
           email: email,
         }
       );
       // setSubmit(true);
       toast.dismiss(loadingToastId);
-      // setSubmit(true);
-      toast.success('OTP sent successfully to regsitered emailID')
-      setSuccess(request);
-      // console.log(request);
+      if (response.data?.message === "truee") {
+        console.log("Success looking ahead");
+        setSubmit(true);
+        setCookie("token", response.data.token, 1);
+        toast.success("OTP successfully sent to registered emailID");
+      } else {
+        setSubmit(false);
+        toast.error("Email not registered");
+      }
     } catch (error) {
       console.log(error);
-      toast.error('Email not registered');
-      // toast.success('OTP successfully sent to registered emailID');
-      
+      toast.error("Email sending error from catch block");
     }
   };
 
@@ -103,6 +126,11 @@ const Login = () => {
     setSelect(!select);
     // console.log(select);
   };
+
+  if (redirectt) {
+    navigate("/app");
+  }
+  
   return (
     <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
       <Toaster richColors/>

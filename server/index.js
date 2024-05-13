@@ -17,7 +17,6 @@ app.use(
 );
 
 const PORT = process.env.PORT || 8080;
-
 mongoose
   .connect(process.env.MONGODB_URI, {
     useNewUrlParser: true,
@@ -36,17 +35,16 @@ const UserSchema = new mongoose.Schema({
 const User = mongoose.model("User", UserSchema);
 
 const verifyToken = (req, res, next) => {
-  const token = req.header("Authorization");
-
+  
+  const token = req.headers["authorization"];
+  console.log("Toke is "+ token);
   if (!token) return res.status(401).json({ message: "Unauthorized" });
-
   try {
     const decoded = jwt.verify(token.split(" ")[1], process.env.JWT_SECRET);
     req.userId = decoded.userId;
     next();
   } catch (error) {
     console.error("Error verifying token:", error);
-
     res.status(403).json({ message: "Invalid token" });
   }
 };
@@ -92,7 +90,7 @@ app.post("/api/send-otp", async (req, res) => {
       response.end();
     });
     res.send({ message: "OTP sent successfully" });
-    
+
     // res.status(200).json({ message: "OTP sent successfully" });
   } catch (error) {
     console.error("Error sending OTP:", error);
@@ -103,12 +101,15 @@ app.post("/api/send-otp", async (req, res) => {
 
 app.post("/apilogin/send-otp", async (req, res) => {
   const { email } = req.body;
-  const user = await User.findOne({ email });
-  if (!user) {
-    res.send({ message: "User not registered" });
-    return;
-  }
+  console.log("Email is " + email);
   try {
+    const user = await User.findOne({ email });
+    console.log("User is " + user);
+    if (user==null) {
+      res.send({ message: "faill" });
+      return;
+    }
+    
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
     await User.findOneAndUpdate(
@@ -126,20 +127,23 @@ app.post("/apilogin/send-otp", async (req, res) => {
     };
 
     auth.sendMail(receiver, (error, emailResponse) => {
-      if (error) {
-        console.error("Error sending OTP:", error);
-        res.status(500).json({ error: "Failed to send OTP" });
-      } else {
-        console.log("OTP sent successfully");
-        res.send({ message: "OTP sent successfully" });
-      }
+      if (error) throw error;
+      console.log("success");
+      response.end();
+      // Send response with success message
     });
+    
+    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "1h",
+    });
+
+    res.send({ message: "truee", token });
+
   } catch (error) {
     console.error("Error sending OTP:", error);
-    res.status(500).json({ error: "Failed to send OTP" });
+    res.send({ message: "Error sending OTP from server" });
   }
 });
-
 
 app.post("/api/store-otp", async (req, res) => {
   const { aadharNumber, otp, email } = req.body;
@@ -149,35 +153,38 @@ app.post("/api/store-otp", async (req, res) => {
     const user = await User.findOne({ email, otp });
 
     if (!user) {
-      return res.status(400).json({ error: "Invalid OTP" });
+      return res.send({ message: "faill" });
     }
-
-    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "1h",
-    });
 
     // Update the user record with the Aadhar number
     user.aadharNumber = aadharNumber;
     await user.save();
     
-    res.send({ message: "OTP verified successfully", token });
+    // res.send({ message: "OTP verified successfully", token });
+    res.send({ message: "truee"});
   } catch (error) {
     console.error("Error adding Aadhar number:", error);
     res.status(500).json({ error: "Failed to add Aadhar number" });
   }
 });
 
-app.get("/api/protected", verifyToken, async (req, res) => {
+app.post("/api/protected", verifyToken, async (req, res) => {
   try {
-    // Access userId from req object
+    // Retrieve user data from database using userId and OTP
+    const otp = req.body.otp;
+    console.log("otp is" + otp);
     const userId = req.userId;
-    const user = await User.findById(userId);
+    console.log("userID is " + userId);
+    const user = await User.findOne({ _id: userId, otp: otp });
+    // const user = await User.findOne({ userId, otp });
+    // const user = await User.findOne(userId);
+    console.log("User is how "+user);
     if (!user) {
-      return res.send({ message: "User not found" });
+      return res.send({ message: "faill" });
     }
+    
     // Send response
-    return res.send({ message: "User logged in Congrats!"});
-    // res.status(200).json({ user });
+    res.send({ message: "truee"});
   } catch (error) {
     console.error("Error fetching protected data:", error);
     res.status(500).json({ error: "Internal Server Error" });
@@ -185,3 +192,4 @@ app.get("/api/protected", verifyToken, async (req, res) => {
 });
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
