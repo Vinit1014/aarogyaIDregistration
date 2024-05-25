@@ -4,7 +4,7 @@
 
 <h2>Features</h2>
 <ul>
-    <li><strong>User Registration</strong>: Register with Aadhar number, email, and optionally other details like driving license.</li>
+    <li><strong>User Registration</strong>: Register with Aadhar number, email, and optionally other details like a driving license.</li>
     <li><strong>OTP Verification</strong>: OTP sent to user's email for verification using Nodemailer.</li>
     <li><strong>User Login</strong>: Login using email, receive OTP for authentication.</li>
     <li><strong>Protected Routes</strong>: Access to protected resources with valid JWT token.</li>
@@ -14,11 +14,12 @@
 
 <h2>Technologies Used</h2>
 <ul>
-    <li><strong>NextJS</strong>: React framework for server-rendered applications and static websites.</li>
-    <li><strong>TypeScript</strong>: Type-safe JavaScript for enhanced code reliability.</li>
-    <li><strong>Supabase</strong>: Backend-as-a-service providing authentication, storage, and database solutions.</li>
-    <li><strong>TailwindCSS</strong>: Utility-first CSS framework for rapid UI development.</li>
+    <li><strong>ReactJS</strong>: Frontend library for building user interfaces.</li>
+    <li><strong>Node.js</strong>: JavaScript runtime for the backend.</li>
+    <li><strong>Express</strong>: Web framework for Node.js.</li>
+    <li><strong>MongoDB</strong>: NoSQL database for storing user data and OTPs.</li>
     <li><strong>Nodemailer</strong>: For sending OTP emails.</li>
+    <li><strong>JWT (JSON Web Tokens)</strong>: For secure authentication and session management.</li>
 </ul>
 
 <h2>Setup and Installation</h2>
@@ -32,9 +33,11 @@ cd aarogyaIDregistration</code></pre>
         <pre><code>npm install</code></pre>
     </li>
     <li><strong>Set Up Environment Variables</strong>:
-        <p>Create a <code>.env.local</code> file in the root directory and add your Supabase keys and other necessary environment variables:</p>
-        <pre><code>NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key</code></pre>
+        <p>Create a <code>.env</code> file in the root directory and add your MongoDB connection string and other necessary environment variables:</p>
+        <pre><code>MONGODB_URI=your_mongodb_connection_string
+JWT_SECRET=your_jwt_secret
+EMAIL_USER=your_email
+EMAIL_PASS=your_email_password</code></pre>
     </li>
     <li><strong>Run the Development Server</strong>:
         <pre><code>npm run dev</code></pre>
@@ -82,7 +85,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key</code></pre>
 
 <h2>Acknowledgements</h2>
 <ul>
-    <li>Supabase for providing backend services.</li>
-    <li>TailwindCSS for the beautiful and responsive UI design framework.</li>
-    <li>The NextJS and TypeScript communities for their invaluable resources and support.</li>
+    <li>MongoDB for providing the database services.</li>
+    <li>Nodemailer for handling email sending functionality.</li>
+    <li>The ReactJS, Node.js, and Express communities for their invaluable resources and support.</li>
 </ul>
